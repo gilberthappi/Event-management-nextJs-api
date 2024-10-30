@@ -19,7 +19,7 @@ model User {
   otp                String?
   otpExpiresAt       DateTime? 
   company            CompanyUser?
-  notifications      Notification[]
+
   roles              UserRoles[]
   bookings           Bookings[]
 }
@@ -64,7 +64,7 @@ model Event {
   companyId               Int
   location                String
   description             String
-  BookingDeadline     DateTime?
+  bookingDeadline     DateTime?
   startDate     DateTime?
   endDate     DateTime?
   availableSeats           Int
@@ -75,26 +75,11 @@ model Event {
   company                 Company       @relation(fields: [companyId], references: [id])
 }
 
-model Notification {
-  id        Int      @id @default(autoincrement())
-  type      String
-  message   String
-  read      Boolean  @default(false)
-  userId    Int
-  createdAt DateTime @default(now())
-  actionId  Int      @default(0)
-  user      User     @relation(fields: [userId], references: [id])
-}
-
 enum Role {
   ADMIN
   COMPANY_ADMIN
   COMPANY_USER
-  STUDENT
-  TRAINER
-  SUPERVISOR
-  SCHOOL_ADMIN
-  SCHOOL_USER
+  USER
 }
 
 model Bookings {
