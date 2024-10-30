@@ -1,0 +1,36 @@
+services:
+  ngiro_db:
+    image: postgres:15
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - 5430:5432
+    volumes:
+      - /var/ngiro-prod-db:/var/lib/postgresql/data
+    networks:
+      - ngiro-bridge
+
+  ngiro_api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - 8904:8904
+    env_file:
+      - .env
+    networks:
+      - ngiro-network
+      - ngiro-bridge
+    depends_on:
+      - ngiro_db
+
+volumes:
+  psql_data:
+
+networks:
+  ngiro-network:
+    external: true
+  ngiro-bridge:
+    driver: bridge
