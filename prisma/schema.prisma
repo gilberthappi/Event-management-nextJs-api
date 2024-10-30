@@ -8,3 +8,102 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id                 Int            @id @default(autoincrement())
+  email              String         @unique
+  password           String
+  firstName          String
+  lastName           String
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+  otp                String?
+  otpExpiresAt       DateTime? 
+  company            CompanyUser?
+  notifications      Notification[]
+  roles              UserRoles[]
+  bookings           Bookings[]
+}
+
+
+model Company {
+  id             Int           @id @default(autoincrement())
+  name           String
+  address        String
+  email          String        @unique
+  phoneNumber    String        @unique
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  CompanyUser    CompanyUser[]
+  event       Event[]
+}
+
+
+model CompanyUser {
+  id           Int      @id @default(autoincrement())
+  companyId    Int
+  userId       Int      @unique
+  role         String?
+  phoneNumber  String?  @unique
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  company      Company  @relation(fields: [companyId], references: [id])
+  user         User     @relation(fields: [userId], references: [id])
+}
+
+model UserRoles {
+  id     Int  @id @default(autoincrement())
+  userId Int
+  role   Role
+  user   User @relation(fields: [userId], references: [id])
+}
+
+
+model Event {
+  id                      Int           @id @default(autoincrement())
+  title                   String
+  companyId               Int
+  location                String
+  description             String
+  BookingDeadline     DateTime?
+  startDate     DateTime?
+  endDate     DateTime?
+  availableSeats           Int
+  createdAt               DateTime      @default(now())
+  updatedAt               DateTime      @updatedAt
+  isAcceptingBooking Boolean       @default(true)
+  bookings            Bookings[]
+  company                 Company       @relation(fields: [companyId], references: [id])
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  type      String
+  message   String
+  read      Boolean  @default(false)
+  userId    Int
+  createdAt DateTime @default(now())
+  actionId  Int      @default(0)
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+enum Role {
+  ADMIN
+  COMPANY_ADMIN
+  COMPANY_USER
+  STUDENT
+  TRAINER
+  SUPERVISOR
+  SCHOOL_ADMIN
+  SCHOOL_USER
+}
+
+model Bookings {
+  id                Int          @id @default(autoincrement())
+  userId            Int          @default(0)
+  eventId           Int
+  numberOfseats     Int          @default(0)
+  bookingStatus     String       @default("waiting")
+  createdAt         DateTime     @default(now())
+  event             Event        @relation(fields: [eventId], references: [id])
+  user              User         @relation(fields: [userId], references: [id])
+}
