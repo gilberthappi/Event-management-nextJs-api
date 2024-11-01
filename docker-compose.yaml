@@ -1,36 +1,30 @@
+version: '3.8'
+
 services:
-  ngiro_db:
-    image: postgres:15
-    restart: always
-    env_file:
-      - .env
+  app:
+    build: .
     ports:
-      - 5430:5432
-    volumes:
-      - /var/ngiro-prod-db:/var/lib/postgresql/data
-    networks:
-      - ngiro-bridge
+      - "9000:9000"  # Exposing the app port
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      PORT: ${PORT}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
+      SALT_ROUNDS: ${SALT_ROUNDS}
+      CLOUD_NAME: ${CLOUD_NAME}
+      CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY}
+      CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET}
+      EMAIL_USER: ${EMAIL_USER}
+      EMAIL_PASS: ${EMAIL_PASS}
+    # Uncomment this if you have a database service defined
+    # depends_on:
+    #   - db  
 
-  ngiro_api:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    restart: always
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: event_management_kr13_user
+      POSTGRES_PASSWORD: 0Xpg820ZCIRJnUxNcQd5Od0MtJKKIAe2
+      POSTGRES_DB: event_management_kr13
     ports:
-      - 8904:8904
-    env_file:
-      - .env
-    networks:
-      - ngiro-network
-      - ngiro-bridge
-    depends_on:
-      - ngiro_db
-
-volumes:
-  psql_data:
-
-networks:
-  ngiro-network:
-    external: true
-  ngiro-bridge:
-    driver: bridge
+      - "5432:5432"  # Change or remove based on your actual database configuration
