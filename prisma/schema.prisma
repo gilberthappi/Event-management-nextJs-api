@@ -64,14 +64,14 @@ model Event {
   companyId               Int
   location                String
   description             String
-  bookingDeadline     DateTime?
-  startDate     DateTime?
-  endDate     DateTime?
-  availableSeats           Int
+  bookingDeadline         DateTime      @default(now())
+  startDate               DateTime?
+  endDate                 DateTime?
+  availableSeats          Int
   createdAt               DateTime      @default(now())
   updatedAt               DateTime      @updatedAt
-  isAcceptingBooking Boolean       @default(true)
-  bookings            Bookings[]
+  isAcceptingBooking      Boolean       @default(true)
+  bookings                Bookings[]
   company                 Company       @relation(fields: [companyId], references: [id])
 }
 
@@ -84,11 +84,14 @@ enum Role {
 
 model Bookings {
   id                Int          @id @default(autoincrement())
-  userId            Int          @default(0)
+  userId            Int?         @default(0) 
   eventId           Int
   numberOfseats     Int          @default(0)
   bookingStatus     String       @default("waiting")
+  emailForBooking   String
+  phoneForBooking   String
   createdAt         DateTime     @default(now())
   event             Event        @relation(fields: [eventId], references: [id])
-  user              User         @relation(fields: [userId], references: [id])
+  user              User?        @relation(fields: [userId], references: [id])
 }
+

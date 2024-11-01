@@ -39,6 +39,12 @@ export interface ILoginResponse
   roles: $Enums.Role[];
 }
 export interface ILoginUser extends Pick<IUser, "email" | "password"> {}
+export interface ISignUpUser
+  extends Pick<
+    IUser,
+    "email" | "password" | "firstName" | "lastName" | "roles"
+  > {}
+
 export type TErrorResponse = TsoaResponse<
   400 | 401 | 500,
   IResponse<{ message: string }>
@@ -75,7 +81,7 @@ export type TEvent = {
   companyId: number;
   location: string;
   description: string;
-  bookingDeadline: Date | null;
+  bookingDeadline: Date;
   availableSeats: number;
   createdAt: Date;
   updatedAt: Date;
@@ -84,25 +90,29 @@ export type TEvent = {
 export interface CreateEventDto {
   title: string;
   location: string;
-  workplaceType: string;
-  economiSector: string;
   description: string;
-  bookingDeadline: Date | null;
+  bookingDeadline: Date;
   availableSeats: number;
 }
 
 export type TBookings = {
   id: number;
-  userId: number;
+  userId?: number | null;
   eventId: number;
   numberOfseats: number;
+  emailForBooking: string;
+  phoneForBooking: string;
   bookingStatus: string;
   createdAt?: Date | string;
   updatedAt?: Date | string;
 };
 
-export interface CreateApplicationDto {
+export interface CreateBookingDto {
   eventId: number;
+  userId?: number | null;
+  numberOfseats: number;
+  emailForBooking: string;
+  phoneForBooking: string;
 }
 
 export interface IResponse<T> {
