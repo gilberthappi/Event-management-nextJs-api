@@ -46,13 +46,19 @@ export class EventService extends BaseService {
       if (!events) {
         throw new AppError("event post not found", 404);
       }
-      // numberOfBookings: event.bookings.length,
-      // remainingSeats: event.availableSeats - event.bookings.length,
+
+      // Calculate total booked seats
+      const totalBookedSeats = events.bookings.reduce((sum, booking) => {
+        return sum + booking.numberOfseats;
+      }, 0);
+
+      // Calculate remaining seats
+      const remainingSeats = events.availableSeats - totalBookedSeats;
 
       const eventWithCounts = {
         ...events,
         numberOfBookings: events.bookings.length,
-        remainingSeats: events.availableSeats - events.bookings.length,
+        remainingSeats: remainingSeats,
       };
 
       return {
@@ -74,16 +80,26 @@ export class EventService extends BaseService {
         },
       });
 
-      const eventWithCounts = events.map((event) => ({
-        ...event,
-        numberOfBookings: event.bookings.length,
-        remainingSeats: event.availableSeats - event.bookings.length,
-      }));
+      const eventsWithCounts = events.map((event) => {
+        // Calculate total booked seats for each event
+        const totalBookedSeats = event.bookings.reduce((sum, booking) => {
+          return sum + booking.numberOfseats;
+        }, 0);
+
+        // Calculate remaining seats
+        const remainingSeats = event.availableSeats - totalBookedSeats;
+
+        return {
+          ...event,
+          numberOfBookings: event.bookings.length,
+          remainingSeats: remainingSeats,
+        };
+      });
 
       return {
         statusCode: 200,
-        message: "Event posts fetched successfully",
-        data: eventWithCounts,
+        message: "Events fetched successfully",
+        data: eventsWithCounts,
       };
     } catch (error) {
       throw new AppError(error, 500);
